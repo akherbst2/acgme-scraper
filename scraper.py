@@ -37,20 +37,28 @@ if __name__ == '__main__':
     base_url='https://apps.acgme.org'
     url_main = 'https://apps.acgme.org/ads/Public/Programs/Search?stateId=33&specialtyId=&specialtyCategoryTypeId=&numCode=&city='
     output_file = 'results.csv'
+    error_file = 'errors.txt'
     r = requests.get(url_main)
     soup = bs(r.content, 'html5lib')
     table = soup.find('table', attrs={'id': 'programsListView-listview'}).find('tbody')
     referer = 'https://apps.acgme.org/ads/Public/Programs/Search?stateId=33&specialtyId&specialtyCategoryTypeId=&numCode=&city='
     results = list()
+    error_urls = []
     for row in table.findAll('a'):
         if '/ads/Public/Programs/Detail?programId=' not in row['href']:
             continue
-        page_result = get_page_result(row)
-        results.append(page_result)
+        try:
+            page_result = get_page_result(row)
+            results.append(page_result)
+        except:
+            next_url = '{}{}'.format(base_url, row['href'])
+            error_urls.append(next_url)
     with open(output_file, mode='w') as file:
         rows = ['page_id', 'page_title', 'approved_resident_positions', 'filled_resident_positions', 'address']
         writer = csv.DictWriter(file, fieldnames=rows, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writeheader()
         writer.writerows(results)
+    with open(error_file, 'w') as file:
+        file.writelines(error_urls)
     print(results)
 

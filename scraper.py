@@ -58,8 +58,14 @@ def write_error_urls_to_file(urls, filename):
 
 
 if __name__ == '__main__':
+    # State ID for NY, you can find this by searching
+    # 'https://apps.acgme.org/ads/Public/Programs/Search?stateId=&specialtyId=&specialtyCategoryTypeId=&numCode=&city='
+    # for a particular state, then seeing which number appears after 'stateId=' in the url.
+    state_id = 33
     base_url = 'https://apps.acgme.org'
-    url_main = 'https://apps.acgme.org/ads/Public/Programs/Search?stateId=33&specialtyId=&specialtyCategoryTypeId=&numCode=&city='
+    url_main = 'https://apps.acgme.org/ads/Public/Programs/Search?stateId={}&specialtyId=&'\
+               'specialtyCategoryTypeId=&numCode=&city=' \
+               .format(state_id)
     output_file = 'results.csv'
     error_file = 'errors.txt'
     results = list()
